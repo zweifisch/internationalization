@@ -1,0 +1,21 @@
+{
+  "name": "internationalization",
+  "version": "0.0.1",
+  "description": "i18n",
+  "main": "index.js",
+  "devDependencies": {
+    "chai": "^1.9.2"
+  },
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register test.coffee"
+  },
+  "author": "zf",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "repos:babylon"
+  }
+}
