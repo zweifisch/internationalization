@@ -78,7 +78,8 @@ middleware = ({cookie, directory, fallback})->
                 debug "language preference from cookie #{lang}"
         if lang not of langs
             debug "accept language #{req.headers['accept-language']}"
-            lang = findBestMatch (getAcceptLanguage req.headers['accept-language']), langs
+            lang = if req.headers['accept-language']
+                findBestMatch (getAcceptLanguage req.headers['accept-language']), langs
             if lang
                 debug "accept language intepreted as #{lang}"
             else
