@@ -25,11 +25,13 @@ locales
 ```jade
 span= _("Hello {username}", {username: username})
 span= _("Hello {1}", username)
+input(placeholder=_("Password") type="password")
 ```
 
 ```ini
 Hello {username} = Guten Tag {username}
 Hello {1} = Guten Tag {1}
+Password = Passwort
 ```
 
 ## generate/update language files(TBD)

@@ -16,6 +16,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "repos:babylon"
-  }
+    "url": "git@github.com:zweifisch/internationalization.git"
+  },
+  "keywords": [
+    "i18n"
+  ]
 }
