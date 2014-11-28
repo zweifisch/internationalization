@@ -156,7 +156,9 @@
       };
       req.lang = lang;
       if (lang && req.cookies[cookie] !== lang) {
-        res.cookie(cookie, lang);
+        res.cookie(cookie, lang, {
+          maxAge: 31536000000
+        });
       }
       debug("lang " + lang);
       return next();

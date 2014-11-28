@@ -89,7 +89,8 @@ middleware = ({cookie, directory, fallback})->
         res.locals.__ = (args...)-> translatePlural lang, args...
         req.lang = lang
         if lang and req.cookies[cookie] isnt lang
-            res.cookie cookie, lang
+            res.cookie cookie, lang,
+                maxAge: 31536000000  # a year
         debug "lang #{lang}"
         next()
 
