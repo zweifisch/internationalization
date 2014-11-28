@@ -1,6 +1,6 @@
 {
   "name": "internationalization",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "i18n",
   "main": "index.js",
   "devDependencies": {
