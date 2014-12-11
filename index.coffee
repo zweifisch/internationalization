@@ -2,7 +2,7 @@ fs = require 'fs'
 path = require 'path'
 
 Template = require './template'
-{parse} = require './parser'
+{parse} = require 'miff'
 
 debug = require('debug') 'i18n'
 
@@ -15,7 +15,7 @@ loadSingle = (directory)->
         pth = path.join directory, file
         content = fs.readFileSync pth, encoding: 'utf8'
         try
-            parse content, ret
+            parse content, equal:yes, section:yes, ret
         catch e
             throw new Error "#{e.message} in #{pth}"
     ret
@@ -59,7 +59,7 @@ translatePlural = (lang, key, keyPlural, count, vars)->
 
 middleware = ({cookie, directory, fallback})->
     if not directory
-        throw new Error "you hava to specify direcotory for locales"
+        throw new Error "you hava to specify directory for locales"
     cookie ?= 'lang'
     load directory
     _langs = Object.keys langs
@@ -87,6 +87,7 @@ middleware = ({cookie, directory, fallback})->
                 debug "fallback to #{lang}"
         res.locals._ = (args...)-> translate lang, args...
         res.locals.__ = (args...)-> translatePlural lang, args...
+        res.locals.lang = lang
         req.lang = lang
         if lang and req.cookies[cookie] isnt lang
             res.cookie cookie, lang,
@@ -94,9 +95,47 @@ middleware = ({cookie, directory, fallback})->
         debug "lang #{lang}"
         next()
 
+bundleAsJavascript = (directory, lang, exportAs)->
+    if lang not of langs
+        return ""
+    else
+        """
+        ;var #{exportAs} = {};
+        (function() {
+            var dict = #{JSON.stringify langs[lang]};
+            #{exportAs}.translate = function(key, ns) {
+                if (ns) {
+                    return dict[ns][key];
+                } else {
+                    return dict[key];
+                }
+            };
+            #{exportAs}.resource = dict;
+        })();
+        """
+
+javascript = ({directory, cookie, path, exportAs})->
+    url = require 'url'
+    pth = require 'path'
+    path ?= '/i18n.js'
+    cookie ?= 'lang'
+    exportAs ?= 'i18n'
+    (req, res, next)->
+        {pathname} = url.parse req.url
+        if req.method is 'GET' and pathname is path
+            realpath = pth.join directory, pathname.substr 1
+            try
+                res.end bundleAsJavascript directory, req.cookies[cookie], exportAs
+            catch e
+                debug e
+                res.write ';console.error(' + JSON.stringify(e.toString()) + ');'
+                res.end()
+        next()
+
 module.exports =
     load: load
     middleware: middleware
+    javascript: javascript
     translate: translate
     translatePlural: translatePlural
     getAcceptLanguage: getAcceptLanguage

@@ -2,52 +2,8 @@ chai = require 'chai'
 chai.should()
 {expect} = chai
 
-{parse} = require './parser'
 Template = require './template'
 {getAcceptLanguage, findBestMatch} = require './index'
-
-describe 'parse', ->
-
-    it 'should turn lines into a dict', ->
-
-        source = """
-            key=value
-        """
-
-        parse(source).should.deep.equal key:'value'
-
-    it 'should allow white space in key and value', ->
-
-        source = """
-            key=value
-            k e y= v a l
-        """
-
-        parse(source).should.deep.equal
-            key:'value'
-            'k e y': 'v a l'
-
-    it 'should escape', ->
-
-        source = """
-            key\\==value=
-        """
-
-        parse(source).should.deep.equal
-            'key=':'value='
-
-    it 'should parse chinese', ->
-
-        source = """
-            key = 钥匙
-        """
-
-        parse(source).should.deep.equal
-            'key':'钥匙'
-
-    it 'should skip empty line', ->
-
-        parse('').should.deep.equal {}
 
 describe 'template', ->
 

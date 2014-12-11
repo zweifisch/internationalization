@@ -1,6 +1,6 @@
 {
   "name": "internationalization",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "i18n",
   "main": "index.js",
   "devDependencies": {
@@ -12,7 +12,8 @@
   "author": "zf",
   "license": "MIT",
   "dependencies": {
-    "debug": "^2.1.0"
+    "debug": "^2.1.0",
+    "miff": "0.0.3"
   },
   "repository": {
     "type": "git",
