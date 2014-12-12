@@ -30,7 +30,8 @@
       try {
         parse(content, {
           equal: true,
-          section: true
+          section: true,
+          quote: true
         }, ret);
       } catch (_error) {
         e = _error;
@@ -41,14 +42,13 @@
   };
 
   load = function(directory) {
-    var subdir, _i, _len, _ref, _results;
+    var subdir, _i, _len, _ref;
     _ref = fs.readdirSync(directory);
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       subdir = _ref[_i];
-      _results.push(langs[subdir] = loadSingle(path.join(directory, subdir)));
+      langs[subdir] = loadSingle(path.join(directory, subdir));
     }
-    return _results;
+    return langs;
   };
 
   getAcceptLanguage = function(header) {
@@ -169,12 +169,8 @@
     };
   };
 
-  bundleAsJavascript = function(directory, lang, exportAs) {
-    if (!(lang in langs)) {
-      return "";
-    } else {
-      return ";var " + exportAs + " = {};\n(function() {\n    var dict = " + (JSON.stringify(langs[lang])) + ";\n    " + exportAs + ".translate = function(key, ns) {\n        if (ns) {\n            return dict[ns][key];\n        } else {\n            return dict[key];\n        }\n    };\n    " + exportAs + ".resource = dict;\n})();";
-    }
+  bundleAsJavascript = function(resource, lang, exportAs) {
+    return ";var " + exportAs + " = {};\n(function() {\n    var dict = " + (JSON.stringify(resource)) + ";\n    " + exportAs + ".translate = function(key, ns) {\n        if (ns) {\n            return dict[ns][key];\n        } else {\n            return dict[key];\n        }\n    };\n    " + exportAs + ".resource = dict;\n    " + exportAs + ".lang = '" + lang + "';\n})();";
   };
 
   javascript = function(_arg) {
@@ -197,7 +193,7 @@
       if (req.method === 'GET' && pathname === path) {
         realpath = pth.join(directory, pathname.substr(1));
         try {
-          res.end(bundleAsJavascript(directory, req.cookies[cookie], exportAs));
+          res.end(bundleAsJavascript(langs[req.cookies[cookie]], req.cookies[cookie], exportAs));
         } catch (_error) {
           e = _error;
           debug(e);
@@ -216,7 +212,8 @@
     translate: translate,
     translatePlural: translatePlural,
     getAcceptLanguage: getAcceptLanguage,
-    findBestMatch: findBestMatch
+    findBestMatch: findBestMatch,
+    bundleAsJavascript: bundleAsJavascript
   };
 
 }).call(this);

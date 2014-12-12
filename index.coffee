@@ -15,14 +15,15 @@ loadSingle = (directory)->
         pth = path.join directory, file
         content = fs.readFileSync pth, encoding: 'utf8'
         try
-            parse content, equal:yes, section:yes, ret
+            parse content, equal:yes, section:yes, quote:yes, ret
         catch e
             throw new Error "#{e.message} in #{pth}"
     ret
 
 load = (directory)->
     for subdir in fs.readdirSync directory
-        langs[subdir] = loadSingle path.join directory,subdir
+        langs[subdir] = loadSingle path.join directory, subdir
+    langs
 
 getAcceptLanguage = (header)->
     header.split(',').map (item)->
@@ -95,24 +96,22 @@ middleware = ({cookie, directory, fallback})->
         debug "lang #{lang}"
         next()
 
-bundleAsJavascript = (directory, lang, exportAs)->
-    if lang not of langs
-        return ""
-    else
-        """
-        ;var #{exportAs} = {};
-        (function() {
-            var dict = #{JSON.stringify langs[lang]};
-            #{exportAs}.translate = function(key, ns) {
-                if (ns) {
-                    return dict[ns][key];
-                } else {
-                    return dict[key];
-                }
-            };
-            #{exportAs}.resource = dict;
-        })();
-        """
+bundleAsJavascript = (resource, lang, exportAs)->
+    """
+    ;var #{exportAs} = {};
+    (function() {
+        var dict = #{JSON.stringify resource};
+        #{exportAs}.translate = function(key, ns) {
+            if (ns) {
+                return dict[ns][key];
+            } else {
+                return dict[key];
+            }
+        };
+        #{exportAs}.resource = dict;
+        #{exportAs}.lang = '#{lang}';
+    })();
+    """
 
 javascript = ({directory, cookie, path, exportAs})->
     url = require 'url'
@@ -125,7 +124,7 @@ javascript = ({directory, cookie, path, exportAs})->
         if req.method is 'GET' and pathname is path
             realpath = pth.join directory, pathname.substr 1
             try
-                res.end bundleAsJavascript directory, req.cookies[cookie], exportAs
+                res.end bundleAsJavascript langs[req.cookies[cookie]], req.cookies[cookie], exportAs
             catch e
                 debug e
                 res.write ';console.error(' + JSON.stringify(e.toString()) + ');'
@@ -140,3 +139,4 @@ module.exports =
     translatePlural: translatePlural
     getAcceptLanguage: getAcceptLanguage
     findBestMatch: findBestMatch
+    bundleAsJavascript: bundleAsJavascript
