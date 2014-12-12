@@ -129,7 +129,8 @@ javascript = ({directory, cookie, path, exportAs})->
                 debug e
                 res.write ';console.error(' + JSON.stringify(e.toString()) + ');'
                 res.end()
-        next()
+        else
+            next()
 
 module.exports =
     load: load

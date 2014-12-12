@@ -193,15 +193,16 @@
       if (req.method === 'GET' && pathname === path) {
         realpath = pth.join(directory, pathname.substr(1));
         try {
-          res.end(bundleAsJavascript(langs[req.cookies[cookie]], req.cookies[cookie], exportAs));
+          return res.end(bundleAsJavascript(langs[req.cookies[cookie]], req.cookies[cookie], exportAs));
         } catch (_error) {
           e = _error;
           debug(e);
           res.write(';console.error(' + JSON.stringify(e.toString()) + ');');
-          res.end();
+          return res.end();
         }
+      } else {
+        return next();
       }
-      return next();
     };
   };
 
