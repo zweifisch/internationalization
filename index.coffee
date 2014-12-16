@@ -61,6 +61,9 @@ translatePlural = (lang, key, keyPlural, count, vars)->
 middleware = ({cookie, directory, fallback})->
     if not directory
         throw new Error "you hava to specify directory for locales"
+
+    env = process.env.NODE_ENV or "development"
+
     cookie ?= 'lang'
     load directory
     _langs = Object.keys langs
@@ -70,6 +73,8 @@ middleware = ({cookie, directory, fallback})->
         debug "no languages loaded"
     _langs = undefined
     (req, res, next)->
+        if env is "development"
+            load directory
         if req.query['set-lang']
             lang = req.query['set-lang']
             debug "language preference from query #{lang}"

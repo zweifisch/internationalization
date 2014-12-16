@@ -110,11 +110,12 @@
   };
 
   middleware = function(_arg) {
-    var cookie, directory, fallback, _langs;
+    var cookie, directory, env, fallback, _langs;
     cookie = _arg.cookie, directory = _arg.directory, fallback = _arg.fallback;
     if (!directory) {
       throw new Error("you hava to specify directory for locales");
     }
+    env = process.env.NODE_ENV || "development";
     if (cookie == null) {
       cookie = 'lang';
     }
@@ -128,6 +129,9 @@
     _langs = void 0;
     return function(req, res, next) {
       var lang;
+      if (env === "development") {
+        load(directory);
+      }
       if (req.query['set-lang']) {
         lang = req.query['set-lang'];
         debug("language preference from query " + lang);
