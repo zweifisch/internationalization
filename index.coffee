@@ -25,6 +25,9 @@ load = (directory)->
         langs[subdir] = loadSingle path.join directory, subdir
     langs
 
+setLangs = (dict)->
+    langs = dict
+
 getAcceptLanguage = (header)->
     header.split(',').map (item)->
         [lang,q] = item.split ';'
@@ -40,17 +43,21 @@ findBestMatch = (accepts, available)->
         return lang if lang of available
 
 translate = (lang, key, vars...)->
-    template = langs[lang]?[key] or key
+    idx = key.indexOf ":"
+    if idx isnt -1
+        template = langs[lang]?[key.substr 0, idx]?[key.substr idx+1] or key.substr idx+1
+    else
+        template = langs[lang]?[key] or key
     if not vars.length
         return template
 
-    if not template of templateCache
+    if template not of templateCache
         templateCache[template] = new Template template
 
     if 'object' is typeof vars[0]
         templateCache[template].render vars[0], vars[1..]
     else
-        templateCache[template].render vars...
+        templateCache[template].render null, vars...
 
 translatePlural = (lang, key, keyPlural, count, vars)->
     if count is 1
@@ -146,3 +153,4 @@ module.exports =
     getAcceptLanguage: getAcceptLanguage
     findBestMatch: findBestMatch
     bundleAsJavascript: bundleAsJavascript
+    setLangs: setLangs

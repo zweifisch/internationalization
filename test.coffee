@@ -43,3 +43,26 @@ describe 'misc', ->
         findBestMatch(['da', 'en-gb', 'en'], {'en-gb':yes}).should.equal 'en-gb'
         findBestMatch(['da', 'en-gb', 'en'], {'en':yes}).should.equal 'en'
         findBestMatch(['da', 'en-gb'], {'en':yes}).should.equal 'en'
+
+describe "translate", ->
+
+    {setLangs, translate} = require "./index"
+
+    setLangs
+        en:
+            ns:
+                key: "value"
+            positional: "second is {2}, first is {1}"
+            named: "key is {key}, value is {value}"
+            mixed: "value is {value}, first is {1}"
+
+
+    it "should find key under namespace", ->
+
+        translate("en", "ns:key").should.equal "value"
+
+    it "should render template", ->
+
+        translate("en", "positional", "first", "second").should.equal "second is second, first is first"
+        translate("en", "named", key: "key", value: "value").should.equal "key is key, value is value"
+        translate("en", "mixed", value: "value", "first").should.equal "value is value, first is first"

@@ -12,10 +12,13 @@ app.use(i18n.middleware({
 
 directory layout
 
+files under then same directory will be merged(file name does not matter)
+
 ```
 locales
 ├── en
-│   └── index.ini
+│   ├── foo.ini
+│   └── bar.ini
 └── zh
     └── index.ini
 ```
@@ -32,6 +35,17 @@ input(placeholder=_("Password") type="password")
 Hello {username} = Guten Tag {username}
 Hello {1} = Guten Tag {1}
 Password = Passwort
+```
+
+### namespace
+
+```jade
+span= _("profile:Hello {username}", {username: username})
+```
+
+```ini
+[profile]
+Hello {username} = Guten Tag {username}
 ```
 
 ## generate/update language files(TBD)
