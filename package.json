@@ -4,10 +4,12 @@
   "description": "i18n",
   "main": "index.js",
   "devDependencies": {
-    "chai": "^1.9.2"
+    "chai": "^1.9.2",
+    "coffee-script": "^1.8.0",
+    "mocha": "^2.0.1"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register test.coffee"
+    "test": "./node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee"
   },
   "author": "zf",
   "license": "MIT",
