@@ -80,6 +80,10 @@
 
   })();
 
-  module.exports = Template;
+  if (typeof module !== "undefined" && module !== null) {
+    module.exports = Template;
+  } else {
+    return Template;
+  }
 
 }).call(this);

@@ -2,10 +2,9 @@ chai = require 'chai'
 chai.should()
 {expect} = chai
 
-Template = require './template'
-{getAcceptLanguage, findBestMatch} = require './index'
-
 describe 'template', ->
+
+    Template = require './template'
 
     it 'should support named vars', ->
         t = new Template "{key} is {value}"
@@ -33,36 +32,56 @@ describe 'template', ->
 
 describe 'header parsing', ->
 
+    {getAcceptLanguage} = require './utils'
     it 'should parse header', ->
         getAcceptLanguage('da, en-gb;q=0.8, en;q=0.7').should.deep.equal ['da', 'en-gb', 'en']
 
-describe 'misc', ->
-
-    it 'should find best match', ->
-        findBestMatch(['da', 'en-gb', 'en'], {'da':yes, 'en-gb':yes}).should.equal 'da'
-        findBestMatch(['da', 'en-gb', 'en'], {'en-gb':yes}).should.equal 'en-gb'
-        findBestMatch(['da', 'en-gb', 'en'], {'en':yes}).should.equal 'en'
-        findBestMatch(['da', 'en-gb'], {'en':yes}).should.equal 'en'
-
 describe "translate", ->
 
-    {setLangs, translate} = require "./index"
-
-    setLangs
-        en:
-            ns:
-                key: "value"
-            positional: "second is {2}, first is {1}"
-            named: "key is {key}, value is {value}"
-            mixed: "value is {value}, first is {1}"
-
+    {Translator} = require "./translator"
 
     it "should find key under namespace", ->
 
-        translate("en", "ns:key").should.equal "value"
+        translator  = new Translator()
+        translator.langs =
+            en:
+                ns:
+                    key: "value"
+        translator.translate("en", "ns:key").should.equal "value"
+
+        translator = new Translator "."
+        translator.langs =
+            en:
+                ns:
+                    key: "value"
+        translator.translate("en", "ns.key").should.equal "value"
 
     it "should render template", ->
 
-        translate("en", "positional", "first", "second").should.equal "second is second, first is first"
-        translate("en", "named", key: "key", value: "value").should.equal "key is key, value is value"
-        translate("en", "mixed", value: "value", "first").should.equal "value is value, first is first"
+        translator = new Translator()
+        translator.langs =
+            en:
+                positional: "second is {2}, first is {1}"
+                named: "key is {key}, value is {value}"
+                mixed: "value is {value}, first is {1}"
+
+        translator.translate("en", "positional", "first", "second").should.equal "second is second, first is first"
+        translator.translate("en", "named", key: "key", value: "value").should.equal "key is key, value is value"
+        translator.translate("en", "mixed", value: "value", "first").should.equal "value is value, first is first"
+
+    it "should find closest", ->
+
+        translator = new Translator()
+
+        translator.langs = 'da':yes, 'en-gb':yes
+        translator.try(['da', 'en-gb', 'en']).should.equal 'da'
+
+        translator.langs = 'en-gb':yes
+        translator.try(['da', 'en-gb', 'en']).should.equal 'en-gb'
+
+        translator.langs = en: yes
+        translator.try(['da', 'en-gb', 'en']).should.equal 'en'
+
+        translator.langs = en: yes
+        translator.try(['da', 'en-gb']).should.equal 'en'
+

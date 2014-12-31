@@ -51,4 +51,7 @@ class Template
                     throw new Error "var '#{@tokens[i]}' missing in '#{@template}'"
         ret
 
-module.exports = Template
+if module?
+    module.exports = Template
+else
+    return Template

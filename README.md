@@ -77,7 +77,41 @@ more options:
 * `path` default `/i18n.js`
 * `exportAs` default `i18n`
 
-### angularjs intergartion(TBD)
+### angularjs intergartion
+
+```javascript
+app.use(i18n.angular({
+    directory: path.join(__dirname, 'locales'),
+    module: 'i18n',
+    service: 'i18n',
+    filter: 'translate'
+}));
+```
+
+include in html
+
+```html
+<script src="/path/to/angularjs.js"></script>
+<script src="/i18n.js"></script>
+```
+
+using filter
+
+```html
+<p>{{'delete warning'| translate:resource.name}}</p>
+<button>{{'action:delete' | translate}}</button>
+```
+
+using service
+
+```javascript
+app.directive("", function(i18n)->
+    return {
+        link: function(){
+            console.log(i18n.translate("resource key", {name: "foo"}));
+        }
+    };
+```
 
 ## generate/update language files(TBD)
 
