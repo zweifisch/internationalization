@@ -7,6 +7,7 @@ debug = (require 'debug') 'i18n'
 TemplateSource = fs.readFileSync pth.join __dirname, 'template.js'
 
 translate = (key, vars...)->
+    return "" unless key
     idx = key.indexOf nsSeparator
     if idx isnt -1
         template = resource[key.substr 0, idx]?[key.substr idx+1] or key.substr idx+1

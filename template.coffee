@@ -48,7 +48,7 @@ class Template
                 else if 0 < +@tokens[i] <= positionalvars.length
                     ret += positionalvars[+@tokens[i] - 1]
                 else
-                    throw new Error "var '#{@tokens[i]}' missing in '#{@template}'"
+                    throw new Error "var '#{@tokens[i]}' missing, required in '#{@template}'"
         ret
 
 if module?

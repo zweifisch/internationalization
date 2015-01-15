@@ -18,6 +18,9 @@
   translate = function() {
     var idx, key, template, vars, _ref, _ref1;
     key = arguments[0], vars = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (!key) {
+      return "";
+    }
     idx = key.indexOf(nsSeparator);
     if (idx !== -1) {
       template = ((_ref = resource[key.substr(0, idx)]) != null ? _ref[key.substr(idx + 1)] : void 0) || key.substr(idx + 1);

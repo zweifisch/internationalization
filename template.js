@@ -69,7 +69,7 @@
           } else if ((0 < (_ref1 = +this.tokens[i]) && _ref1 <= positionalvars.length)) {
             ret += positionalvars[+this.tokens[i] - 1];
           } else {
-            throw new Error("var '" + this.tokens[i] + "' missing in '" + this.template + "'");
+            throw new Error("var '" + this.tokens[i] + "' missing, required in '" + this.template + "'");
           }
         }
       }
