@@ -19,6 +19,8 @@ middleware = ({cookie, directory, fallback, nsSeparator, query})->
 
     (req, res, next)->
 
+        throw new Error "cookies not accessible" unless req.cookies
+
         translator.load directory if env is "development"
 
         lang = req.query[query] || req.cookies[cookie] || translator.try getAcceptLanguage req.headers['accept-language']
