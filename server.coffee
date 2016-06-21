@@ -29,10 +29,9 @@ middleware = ({cookie, directory, fallback, nsSeparator, query})->
             lang = fallback
             debug "fallback to #{lang}"
 
-        res.locals._ = (args...)-> translator.translate lang, args...
-        res.locals.__ = (args...)-> translator.translatePlural lang, args...
-        res.locals.lang = lang
-        req.lang = lang
+        req.tr = res.locals._ = (args...)-> translator.translate lang, args...
+        req.tp = res.locals.__ = (args...)-> translator.translatePlural lang, args...
+        req.lang = res.locals.lang = lang
 
         if req.cookies[cookie] isnt lang
             res.cookie cookie, lang, maxAge: 31536000000  # a year
